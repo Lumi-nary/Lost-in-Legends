@@ -20,6 +20,7 @@ public class TriggerInteractionBase : MonoBehaviour, IInteractable
                 Interact();
             }
         }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
