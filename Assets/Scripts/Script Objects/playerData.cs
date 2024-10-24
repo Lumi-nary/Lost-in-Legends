@@ -1,6 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Player/Player Data")] //Create a new playerData object by right clicking in the Project Menu then Create/Player/Player Data and drag onto the player
+
+[CreateAssetMenu(fileName = "playerMoveData", menuName = "Game/Player/Player Movement Data")]
 public class PlayerData : ScriptableObject
 {
     [Header("Gravity")]

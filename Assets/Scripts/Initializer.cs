@@ -8,7 +8,7 @@ public static class Initializer
 
     public static void Execute()
     {
-        Debug.Log("Loaded by the Persist objects from the initializer script");
-        Object.DontDestroyOnLoad(Object.Instantiate(Resources.Load("Persistence Objects")));
+        //Debug.Log("Loaded by the Persist objects from the initializer script");
+        //Object.DontDestroyOnLoad(Object.Instantiate(Resources.Load("Persistence Objects")));
     }
 }
