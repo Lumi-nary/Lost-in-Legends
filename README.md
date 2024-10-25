@@ -1,16 +1,16 @@
 Work in Progress Game of 2D Openworld Platformer/Sidescroller game
-<code style="color : greenyellow">1.	Movement (Done)</code>
-<code style="color : greenyellow">2.	Scene Swapping and back to back (Done)</code>
-<code style="color : greenyellow">3.	Health and Mana (Done)</code>
-4.	Inventory
-<code style="color : greenyellow">5.	Stats (Done)</code>
-6.	Armor
-7.	Weapon (Melee and Range)
-8.	Swap Weapon
-9.	Animation
-10.	Sounds
-11.	Enemy
-12.	Drops
-13.	Boss
-14.	Dialogues
-15.	Save/Load System
+<code style="color : greenyellow">1.	Movement </code> $${\color{lightgreen}(Done)}$$ <br>
+<code style="color : greenyellow">2.	Scene Swapping and back to back</code> $${\color{lightgreen}(Done)}$$ <br>
+<code style="color : greenyellow">3.	Health and Mana</code> $${\color{lightgreen}(Done)}$$ <br>
+4.	Inventory <br>
+<code style="color : greenyellow">5.	Stats</code> $${\color{lightgreen}(Done)}$$ <br>
+6.	Armor <br>
+7.	Weapon (Melee and Range) <br>
+8.	Swap Weapon <br>
+9.	Animation <br>
+10.	Sounds <br>
+11.	Enemy <br>
+12.	Drops <br>
+13.	Boss <br>
+14.	Dialogues <br>
+15.	Save/Load System <br>
