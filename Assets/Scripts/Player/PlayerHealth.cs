@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         var damageDealer = source.GetComponent<IDamageDealer>();
         if (damageDealer == null) return false;
 
-        var damageData = damageDealer.GetDamageData();
+        var damageData = damageDealer.GetDamageData(source);
         return !immunities.Contains(damageData.type);
     }
 

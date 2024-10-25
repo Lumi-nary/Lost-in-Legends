@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IDamageDealer
 {
-    DamageData GetDamageData();
+    DamageData GetDamageData(GameObject target);
 }

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IKnockbackable
 {
     public PlayerData Data;
 
@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     public float LastOnWallRightTime { get; private set; }
     public float LastOnWallLeftTime { get; private set; }
 
+
     //Jump
     private bool _isJumpCut;
     private bool _isJumpFalling;
@@ -30,6 +31,11 @@ public class PlayerMovement : MonoBehaviour
     //Wall Jump
     private float _wallJumpStartTime;
     private int _lastWallJumpDir;
+
+    //Knockback and soon to add future that affects movement
+    private bool _isKnockedBack;
+    private float _currentKnockbackTime;
+    private Vector2 _knockbackVelocity;
 
     private Vector2 _moveInput;
     public float LastPressedJumpTime { get; private set; }
@@ -71,18 +77,25 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region INPUT HANDLER
-        _moveInput.Set(userInput.moveInput.x, userInput.moveInput.y);
-
-        if (_moveInput.x != 0)
-            CheckDirectionToFace(_moveInput.x > 0);
-
-        if (userInput.WasJumpPressed)
+        if (!_isKnockedBack)
         {
-            OnJumpInput();
+            _moveInput.Set(userInput.moveInput.x, userInput.moveInput.y);
+
+            if (_moveInput.x != 0)
+                CheckDirectionToFace(_moveInput.x > 0);
+
+            if (userInput.WasJumpPressed)
+            {
+                OnJumpInput();
+            }
+            if (userInput.WasJumpReleased)
+            {
+                OnJumpUpInput();
+            }
         }
-        if (userInput.WasJumpReleased)
+        else
         {
-            OnJumpUpInput();
+            HandleKnockbackRecovery();
         }
         #endregion
 
@@ -202,15 +215,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Handle Run
-        if (IsWallJumping)
-            Run(Data.wallJumpRunLerp);
-        else
-            Run(1);
+        if (!_isKnockedBack)
+        {
+            //Handle Run
+            if (IsWallJumping)
+                Run(Data.wallJumpRunLerp);
+            else
+                Run(1);
 
-        //Handle Slide
-        if (IsSliding)
-            Slide();
+            //Handle Slide
+            if (IsSliding)
+                Slide();
+        }
+        else
+        {
+            // Apply knockback velocity
+            RB.velocity = _knockbackVelocity;
+        }
     }
 
     #region INPUT CALLBACKS
@@ -356,6 +377,44 @@ public class PlayerMovement : MonoBehaviour
         movement = Mathf.Clamp(movement, -Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime), Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime));
 
         RB.AddForce(movement * Vector2.up);
+    }
+    public void ApplyKnockBack(Vector2 direction, float force)
+    {
+        // Dont allow knockback during wall sliding
+        if (IsSliding) return;
+
+        // Apply knockback resistance
+        float finalForce = force * (1f - Data.knockbackResistance);
+
+        // Calculate knockback velocity
+        _knockbackVelocity = direction.normalized * finalForce;
+        Debug.Log(_knockbackVelocity);
+        // set knockback state
+        _isKnockedBack = true;
+        _currentKnockbackTime = 0f;
+
+        // reset other states
+        IsJumping = false;
+        IsWallJumping = false;
+        _isJumpCut = false;
+        _isJumpFalling = false;
+    }
+    private void HandleKnockbackRecovery()
+    {
+        if (_isKnockedBack)
+        {
+            _currentKnockbackTime += Time.deltaTime;
+
+            // gradually reduce knock velocity
+            _knockbackVelocity = Vector2.Lerp(_knockbackVelocity, Vector2.zero, Data.knockbackRecovery * Time.deltaTime);
+
+            // check if knockback should end
+            if (_knockbackVelocity.magnitude < 0.1f || _currentKnockbackTime >= 1f)
+            {
+                _isKnockedBack = false;
+                _knockbackVelocity = Vector2.zero;
+            }
+        }
     }
     #endregion
 

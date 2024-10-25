@@ -42,3 +42,5 @@ MonoBehaviour:
   slideAccel: 2.5
   coyoteTime: 0.1
   jumpInputBufferTime: 0.1
+  knockbackResistance: 0.5
+  knockbackRecovery: 2.5

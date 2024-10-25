@@ -7842,9 +7842,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageAmount: 10
-  damageType: 0
+  damageType: 2
   canDamageMultipleTimes: 1
   damageInterval: 1
+  knockbackForce: 15
+  useCustomKnockbackDirection: 0
+  customKnockbackDirection: {x: 1, y: 0}
   useCollision: 1
   useTrigger: 0
 --- !u!1 &1884821664 stripped
