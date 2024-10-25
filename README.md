@@ -1,9 +1,9 @@
-Work in Progress Game of 2D Openworld Platformer/Sidescroller game
-<code style="color : greenyellow">1.	Movement </code> $${\color{lightgreen}(Done)}$$ <br>
-<code style="color : greenyellow">2.	Scene Swapping and back to back</code> $${\color{lightgreen}(Done)}$$ <br>
-<code style="color : greenyellow">3.	Health and Mana</code> $${\color{lightgreen}(Done)}$$ <br>
+Work in Progress Game of 2D Openworld Platformer/Sidescroller game <br>
+1.	Movement $${\color{lightgreen}(Done)}$$ <br>
+2.	Scene Swapping and back to back $${\color{lightgreen}(Done)}$$ <br>
+3.	Health and Mana $${\color{lightgreen}(Done)}$$ <br>
 4.	Inventory <br>
-<code style="color : greenyellow">5.	Stats</code> $${\color{lightgreen}(Done)}$$ <br>
+5.	Stats $${\color{lightgreen}(Done)}$$ <br>
 6.	Armor <br>
 7.	Weapon (Melee and Range) <br>
 8.	Swap Weapon <br>
