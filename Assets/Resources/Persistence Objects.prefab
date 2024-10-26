@@ -194,7 +194,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-<<<<<<< HEAD
 --- !u!1 &2575537980879646785
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,8 +302,6 @@ MonoBehaviour:
   minValues: {x: -7.5, y: 4.5, z: -10}
   maxValues: {x: 70.5, y: 12, z: -10}
   playerTarget: {fileID: 0}
-=======
->>>>>>> camera-rework
 --- !u!1 &2631346449262109234
 GameObject:
   m_ObjectHideFlags: 0
