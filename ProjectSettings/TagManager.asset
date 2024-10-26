@@ -14,12 +14,12 @@ TagManager:
   - Player
   - Ground
   - Interactable
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Background
+  - Parallax1
+  - Parallax2
+  - Parallax3
+  - Parallax4
+  - Parallax5
   - 
   - 
   - 
