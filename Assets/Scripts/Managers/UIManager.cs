@@ -1,49 +1,71 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class uiManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
-    [SerializeField] private StatsBar healthBar;
-    [SerializeField] private StatsBar manaBar;
+    [SerializeField] private UISystemConfig systemConfig;
 
-    private void Start()
+    private static UIManager instance;
+    public static UIManager Instance
     {
-        // Subscribe to stat changes
-        PlayerStatsManager.Instance.SubscribeToStat(
-            PlayerStatsManager.StatType.Health,
-            UpdateHealthBar);
-
-        PlayerStatsManager.Instance.SubscribeToStat(
-            PlayerStatsManager.StatType.Mana,
-            UpdateManaBar);
-
-        // Initial setup
-        UpdateHealthBar(PlayerStatsManager.Instance.GetCurrentValue(PlayerStatsManager.StatType.Health));
-        UpdateManaBar(PlayerStatsManager.Instance.GetCurrentValue(PlayerStatsManager.StatType.Mana));
-    }
-
-    private void UpdateHealthBar(float value)
-    {
-        healthBar.SetValue(value);
-    }
-
-    private void UpdateManaBar(float value)
-    {
-        manaBar.SetValue(value);
-    }
-
-    private void OnDestroy()
-    {
-        // Clean up subscriptions
-        if (PlayerStatsManager.Instance != null)
+        get
         {
-            PlayerStatsManager.Instance.UnsubscribeFromStat(
-                PlayerStatsManager.StatType.Health,
-                UpdateHealthBar);
-            PlayerStatsManager.Instance.UnsubscribeFromStat(
-                PlayerStatsManager.StatType.Mana,
-                UpdateManaBar);
+            if (instance == null)
+            {
+                instance = FindObjectOfType<UIManager>();
+                if (instance == null)
+                {
+                    GameObject go = new GameObject("UIManager");
+                    instance = go.AddComponent<UIManager>();
+                }
+            }
+            return instance;
         }
+    }
+
+    private Dictionary<PlayerStatsManager.StatType, List<StatBarAdapter>> statDisplays =
+        new Dictionary<PlayerStatsManager.StatType, List<StatBarAdapter>>();
+
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        InitializeUIElements();
+    }
+
+    private void InitializeUIElements()
+    {
+        // Find all stat displays in the scene
+        var adapters = FindObjectsOfType<StatBarAdapter>();
+
+        foreach (var adapter in adapters)
+        {
+            RegisterStatDisplay(adapter);
+        }
+    }
+
+    private void RegisterStatDisplay(StatBarAdapter display)
+    {
+        if (!statDisplays.ContainsKey(display.StatType))
+        {
+            statDisplays[display.StatType] = new List<StatBarAdapter>();
+        }
+
+        if (!statDisplays[display.StatType].Contains(display))
+        {
+            statDisplays[display.StatType].Add(display);
+        }
+    }
+
+    public List<StatBarAdapter> GetDisplaysForStatType(PlayerStatsManager.StatType statType)
+    {
+        return statDisplays.ContainsKey(statType) ? statDisplays[statType] : new List<StatBarAdapter>();
     }
 }

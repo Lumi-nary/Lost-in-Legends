@@ -4,12 +4,49 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamagable
 {
+    [Header("Health Settings")]
     [SerializeField] private List<DamageType> immunities = new List<DamageType>();
-    private bool isInvulnerable = false;
+    [SerializeField] private float deathDelay = 1f;
 
+    private bool isInvulnerable = false;
+    private bool isDead = false;
+
+    private Rigidbody2D rb;
+
+    private PlayerStatsManager statsManager;
+    private void Start()
+    {
+        statsManager = PlayerStatsManager.Instance; // Initialize statsManager
+
+        rb = GetComponent<Rigidbody2D>();
+
+        if (statsManager != null)
+        {
+            statsManager.SubscribeToStat(PlayerStatsManager.StatType.Health, OnHealthChanged);
+        }
+        else
+        {
+            Debug.LogError("PlayerStatsManager instance is null. Make sure it's initialized.");
+        }
+
+        CheckpointManager.Instance.onPlayerRespawn.AddListener(OnPlayerRespawn);
+    }
+
+    private void OnDestroy()
+    {
+        if (statsManager != null)
+        {
+            statsManager.UnsubscribeFromStat(PlayerStatsManager.StatType.Health, OnHealthChanged);
+        }
+        // Unsubscribe from checkpoint respawn events
+        if (CheckpointManager.Instance != null)
+        {
+            CheckpointManager.Instance.onPlayerRespawn.RemoveListener(OnPlayerRespawn);
+        }
+    }
     public bool CanBeDamagedBy(GameObject source)
     {
-        if (isInvulnerable) return false;
+        if (isInvulnerable || isDead) return false;
 
         // Check if player should take damage from this source
         var damageDealer = source.GetComponent<IDamageDealer>();
@@ -21,6 +58,8 @@ public class PlayerHealth : MonoBehaviour, IDamagable
 
     public void TakeDamage(DamageData damageData)
     {
+        if (isDead) return;
+
         // Apply damage modifiers, armor, resistances etc.
         float finalDamage = CalculateFinalDamage(damageData);
 
@@ -40,5 +79,83 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     protected virtual void OnDamaged(DamageData damageData)
     {
         // Handle damage effects, animations, sounds etc.
+
+    }
+    private void OnHealthChanged(float currentHealth)
+    {
+        if (currentHealth <= 0 && !isDead)
+        {
+            Die();
+        }
+    }
+    private void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+
+        // Disable player control
+        //DisablePlayerControl();
+
+        // Play death effects
+        //if (deathEffectPrefab != null)
+        //{
+        //    Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        //}
+
+        // Play death sound
+        //if (deathSound != null)
+        //{
+        //    audioSource.PlayOneShot(deathSound);
+        //}
+
+        // Start death sequence
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        // Wait for death animation/effects
+        yield return new WaitForSeconds(deathDelay);
+
+        // Trigger respawn
+        Respawn();
+    }
+
+    private void Respawn()
+    {
+        // Reset death state
+        isDead = false;
+
+        // Trigger checkpoint respawn
+        CheckpointManager.Instance.RespawnPlayer();
+
+        // Reset health to max
+        float maxHealth = statsManager.GetMaxValue(PlayerStatsManager.StatType.Health);
+        statsManager.ModifyStat(PlayerStatsManager.StatType.Health, maxHealth);
+
+        // Play respawn effects
+        //if (respawnEffectPrefab != null)
+        //{
+        //    Instantiate(respawnEffectPrefab, transform.position, Quaternion.identity);
+        //}
+
+        // Play respawn sound
+        //if (respawnSound != null)
+        //{
+        //    audioSource.PlayOneShot(respawnSound);
+        //}
+
+        // Grant temporary invulnerability
+        //StartCoroutine(GrantTemporaryInvulnerability());
+
+        // Re-enable player control
+        //EnablePlayerControl();
+    }
+
+    private void OnPlayerRespawn(Vector2 respawnPosition)
+    {
+        // Move the player to the respawn position
+        transform.position = respawnPosition;
     }
 }

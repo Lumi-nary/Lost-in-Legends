@@ -25,7 +25,7 @@ public class PlayerStatsManager : MonoBehaviour
     public enum StatType
     {
         Health,
-        Mana
+        Mana,
         // Easy to add more stats here
     }
 
