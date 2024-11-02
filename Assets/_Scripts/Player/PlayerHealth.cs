@@ -14,11 +14,18 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     private Rigidbody2D rb;
 
     private PlayerStatsManager statsManager;
+    private PlayerAnimator playerAnimator;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip hurtSound;
+    [SerializeField] private AudioClip deathSound;
+
     private void Start()
     {
         statsManager = PlayerStatsManager.Instance; // Initialize statsManager
 
         rb = GetComponent<Rigidbody2D>();
+        playerAnimator = GetComponent<PlayerAnimator>();
 
         if (statsManager != null)
         {
@@ -79,6 +86,8 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     protected virtual void OnDamaged(DamageData damageData)
     {
         // Handle damage effects, animations, sounds etc.
+        playerAnimator.PlayHurtAnimation();
+        AudioManager.Instance.PlaySFX(hurtSound);
 
     }
     private void OnHealthChanged(float currentHealth)
@@ -103,11 +112,12 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         //    Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
         //}
 
+
         // Play death sound
-        //if (deathSound != null)
-        //{
-        //    audioSource.PlayOneShot(deathSound);
-        //}
+        if (deathSound != null)
+        {
+            AudioManager.Instance.PlaySFX(deathSound);
+        }
 
         // Start death sequence
         StartCoroutine(DeathSequence());
@@ -116,6 +126,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     private IEnumerator DeathSequence()
     {
         // Wait for death animation/effects
+        playerAnimator.PlayDeathAnimation();
         yield return new WaitForSeconds(deathDelay);
 
         // Trigger respawn
@@ -134,17 +145,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         float maxHealth = statsManager.GetMaxValue(PlayerStatsManager.StatType.Health);
         statsManager.ModifyStat(PlayerStatsManager.StatType.Health, maxHealth);
 
-        // Play respawn effects
-        //if (respawnEffectPrefab != null)
-        //{
-        //    Instantiate(respawnEffectPrefab, transform.position, Quaternion.identity);
-        //}
-
-        // Play respawn sound
-        //if (respawnSound != null)
-        //{
-        //    audioSource.PlayOneShot(respawnSound);
-        //}
+        playerAnimator.ResetDeathState();
 
         // Grant temporary invulnerability
         //StartCoroutine(GrantTemporaryInvulnerability());

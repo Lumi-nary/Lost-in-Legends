@@ -21,7 +21,6 @@ public class PlayerStatsManager : MonoBehaviour
     [SerializeField] private StatsBarConfig manaConfig;
 
     private Dictionary<StatType, StatData> stats;
-
     public enum StatType
     {
         Health,
@@ -39,6 +38,16 @@ public class PlayerStatsManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Clear the instance when the object is destroyed
+        // but only if this is the current instance
+        if (instance == this)
+        {
+            instance = null;
         }
     }
 

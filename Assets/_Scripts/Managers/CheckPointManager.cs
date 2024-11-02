@@ -40,7 +40,15 @@ public class CheckpointManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    private void OnDestroy()
+    {
+        // Clear the instance when the object is destroyed
+        // but only if this is the current instance
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
     public void RegisterCheckpoint(Checkpoint checkpoint)
     {
         if (!checkpoints.Contains(checkpoint))
