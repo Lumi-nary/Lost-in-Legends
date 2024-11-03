@@ -1,4 +1,5 @@
 Work in Progress Game of 2D Openworld Platformer/Sidescroller game <br>
+Functions
 1.	Movement $${\color{lightgreen}(Done)}$$ <br>
 2.	Scene Swapping and back to back $${\color{lightgreen}(Done)}$$ <br>
 3.	Health and Mana $${\color{lightgreen}(Done)}$$ <br>
@@ -7,8 +8,8 @@ Work in Progress Game of 2D Openworld Platformer/Sidescroller game <br>
 6.	Armor <br>
 7.	Weapon (Melee and Range) <br>
 8.	Swap Weapon <br>
-9.	Animation <br>
-10.	Sounds <br>
+9.	Animation <br> $${\color{lightgreen}(Done)}$$ <br>
+10.	Sounds <br> $${\color{lightgreen}(Done)}$$ <br>
 11.	Enemy <br>
 12.	Drops <br>
 13.	Boss <br>
