@@ -8,8 +8,8 @@ Functions
 6.	Armor <br>
 7.	Weapon (Melee and Range) <br>
 8.	Swap Weapon <br>
-9.	Animation <br> $${\color{lightgreen}(Done)}$$ <br>
-10.	Sounds <br> $${\color{lightgreen}(Done)}$$ <br>
+9.	Animation $${\color{lightgreen}(Done)}$$ <br>
+10.	Sounds $${\color{lightgreen}(Done)}$$ <br>
 11.	Enemy <br>
 12.	Drops <br>
 13.	Boss <br>
