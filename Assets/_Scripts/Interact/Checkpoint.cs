@@ -16,9 +16,6 @@ public class Checkpoint : MonoBehaviour
     [SerializeField] private GameObject inactiveVisual;
     [SerializeField] private ParticleSystem activationEffect;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip activationSound;
-
     private bool isActive = false;
 
     private void OnValidate()
@@ -67,10 +64,7 @@ public class Checkpoint : MonoBehaviour
         }
 
         // Play sound
-        if (activationSound != null)
-        {
-            AudioManager.Instance.PlaySFX(activationSound);
-        }
+        AudioManager.Instance.PlaySFX("activationSound");
 
         CheckpointManager.Instance.ActivateCheckpoint(this);
     }

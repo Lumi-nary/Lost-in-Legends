@@ -16,9 +16,6 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     private PlayerStatsManager statsManager;
     private PlayerAnimator playerAnimator;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip hurtSound;
-    [SerializeField] private AudioClip deathSound;
 
     private void Start()
     {
@@ -87,7 +84,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     {
         // Handle damage effects, animations, sounds etc.
         playerAnimator.PlayHurtAnimation();
-        AudioManager.Instance.PlaySFX(hurtSound);
+        AudioManager.Instance.PlaySFXOneShot("playerHurt");
 
     }
     private void OnHealthChanged(float currentHealth)
@@ -114,10 +111,9 @@ public class PlayerHealth : MonoBehaviour, IDamagable
 
 
         // Play death sound
-        if (deathSound != null)
-        {
-            AudioManager.Instance.PlaySFX(deathSound);
-        }
+        AudioManager.Instance.PlaySFXOneShot("playerDie");
+        AudioManager.Instance.PlaySFXOneShot("playerDieBG");
+
 
         // Start death sequence
         StartCoroutine(DeathSequence());
@@ -137,7 +133,6 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     {
         // Reset death state
         isDead = false;
-
         // Trigger checkpoint respawn
         CheckpointManager.Instance.RespawnPlayer();
 
@@ -146,7 +141,6 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         statsManager.ModifyStat(PlayerStatsManager.StatType.Health, maxHealth);
 
         playerAnimator.ResetDeathState();
-
         // Grant temporary invulnerability
         //StartCoroutine(GrantTemporaryInvulnerability());
 

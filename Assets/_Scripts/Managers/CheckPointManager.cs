@@ -83,7 +83,7 @@ public class CheckpointManager : MonoBehaviour
         Vector2 respawnPosition = currentCheckpoint != null
             ? currentCheckpoint.transform.position
             : defaultSpawnPoint.position;
-        Debug.Log("Respawning player at: " + respawnPosition);
+        //Debug.Log("Respawning player at: " + respawnPosition);
         onPlayerRespawn?.Invoke(respawnPosition);
     }
 
