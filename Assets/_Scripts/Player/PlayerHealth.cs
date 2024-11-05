@@ -16,7 +16,6 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     private PlayerStatsManager statsManager;
     private PlayerAnimator playerAnimator;
 
-
     private void Start()
     {
         statsManager = PlayerStatsManager.Instance; // Initialize statsManager
@@ -84,7 +83,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
     {
         // Handle damage effects, animations, sounds etc.
         playerAnimator.PlayHurtAnimation();
-        AudioManager.Instance.PlaySFXOneShot("playerHurt");
+        AudioManager.Instance.PlaySFXOneShot(SFXKey.PlayerHurt);
 
     }
     private void OnHealthChanged(float currentHealth)
@@ -111,8 +110,8 @@ public class PlayerHealth : MonoBehaviour, IDamagable
 
 
         // Play death sound
-        AudioManager.Instance.PlaySFXOneShot("playerDie");
-        AudioManager.Instance.PlaySFXOneShot("playerDieBG");
+        AudioManager.Instance.PlaySFXOneShot(SFXKey.PlayerHurt);
+        AudioManager.Instance.PlaySFXOneShot(SFXKey.PlayerDeathBG);
 
 
         // Start death sequence

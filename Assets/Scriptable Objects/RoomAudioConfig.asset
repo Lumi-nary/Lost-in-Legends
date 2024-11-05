@@ -13,19 +13,22 @@ MonoBehaviour:
   m_Name: RoomAudioConfig
   m_EditorClassIdentifier: 
   roomSetups:
-  - roomId: 0
+  - roomName: Plains
+    roomId: 0
     musicTrackName: 
     ambientSoundNames:
     - ambientPlains
     crossfadeMusic: 1
     exclusiveAmbient: 1
-  - roomId: 1
+  - roomName: Plains
+    roomId: 1
     musicTrackName: 
     ambientSoundNames:
     - ambientPlains
     crossfadeMusic: 1
     exclusiveAmbient: 1
-  - roomId: 2
+  - roomName: Dungeon
+    roomId: 2
     musicTrackName: 
     ambientSoundNames:
     - ambientWind

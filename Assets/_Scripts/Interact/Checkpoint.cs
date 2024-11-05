@@ -64,7 +64,7 @@ public class Checkpoint : MonoBehaviour
         }
 
         // Play sound
-        AudioManager.Instance.PlaySFX("activationSound");
+        AudioManager.Instance.PlaySFX(SFXKey.CheckpointActivate);
 
         CheckpointManager.Instance.ActivateCheckpoint(this);
     }

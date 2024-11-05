@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
+    // Global Access
     private static AudioManager instance;
     public static AudioManager Instance
     {
         get
         {
+            // If the instance isnt set find or create it
+            // not recommended since i dont know how to set the SO directly yet
             if (instance == null)
             {
                 instance = FindObjectOfType<AudioManager>();
@@ -23,87 +27,89 @@ public class AudioManager : MonoBehaviour
     }
 
     [Header("Configuration")]
-    [SerializeField] private AudioConfig audioConfig;
+    [SerializeField] private AudioConfig audioConfig; // Stores references to all audio clips
+    [SerializeField] private AudioMixer audioMixer;   // Audio mixer for controlling sound groups
 
     [Header("Audio Sources")]
-    [SerializeField] private int sfxSourcePoolSize = 5;
-    [SerializeField] private List<AudioSource> sfxSourcePool;
+    [SerializeField] private int sfxSourcePoolSize = 5;  // Number of SFX sources to pre-instantiate
+    private List<AudioSource> sfxSourcePool; // Pool of reusable audio sources for SFX
 
-    [Header("Music System")]
-    private AudioSource musicMainSource;
-    private List<AudioSource> musicLayerSources = new List<AudioSource>();
-    private string currentMusicTrack;
-    private List<float> layerVolumes = new List<float>();
+    [Header("Core Audio Sources")]
+    private AudioSource musicSource;
+    private Dictionary<AmbientKey, AudioSource> ambientSources = new Dictionary<AmbientKey, AudioSource>();
 
-    [Header("Ambient System")]
-    private Dictionary<string, AudioSource> ambientSources = new Dictionary<string, AudioSource>();
-
-    [Header("Volume Controls")]
-    [Range(0f, 1f)]
-    [SerializeField] private float masterVolume = 1f;
-    [Range(0f, 1f)]
-    [SerializeField] private float musicVolume = 1f;
-    [Range(0f, 1f)]
-    [SerializeField] private float sfxVolume = 1f;
-    [Range(0f, 1f)]
-    [SerializeField] private float ambientVolume = 1f;
+    private MusicKey currentMusic;
 
     private void Awake()
     {
+        // Ensure there's only one instance of AudioManager
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
-            InitializeAudioSources();
+            DontDestroyOnLoad(gameObject); // Keep this object across scene loads
+            InitializeAudioSources(); // Set up audio sources
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // Destroy duplicate AudioManagers
         }
     }
 
     #region Setup
     private void InitializeAudioSources()
     {
-        // Initialize music sources
-        musicMainSource = CreateAudioSource("MusicMain");
-        musicMainSource.loop = true;
+        // Create and configure the music audio source
+        musicSource = CreateAudioSource("MusicSource");
+        musicSource.loop = true; // Music loops by default
 
-        // Initialize SFX pool
+        // Create a pool of audio sources for SFX
         sfxSourcePool = new List<AudioSource>();
+        GameObject sfxPool = new GameObject("SFX_Pool");
+        sfxPool.transform.parent = transform;
+
         for (int i = 0; i < sfxSourcePoolSize; i++)
         {
-            AudioSource source = CreateAudioSource($"SFX_{i}");
-            source.playOnAwake = false;
+            GameObject sfxObject = new GameObject($"SFX_{i}");
+            sfxObject.transform.parent = sfxPool.transform;
+
+            AudioSource source = sfxObject.AddComponent<AudioSource>();
+            source.playOnAwake = false; // SFX should not auto-play
+            source.outputAudioMixerGroup = audioMixer.FindMatchingGroups("SFX")[0];
             sfxSourcePool.Add(source);
         }
+
+        // Assign the music source to the "Music" mixer group
+        musicSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Music")[0];
     }
 
     private AudioSource CreateAudioSource(string name)
     {
+        // Helper method to create a new AudioSource and attach it to AudioManager
         var go = new GameObject(name);
         go.transform.parent = transform;
         return go.AddComponent<AudioSource>();
     }
+    #endregion
 
+    #region SFX System
     private AudioSource GetAvailableSFXSource()
     {
+        // Find an available audio source from the pool, or use the first one if all are busy
         foreach (var source in sfxSourcePool)
         {
             if (!source.isPlaying)
                 return source;
         }
-        return sfxSourcePool[0]; // Reuse the first source if all are busy
+        return sfxSourcePool[0]; // Fallback if all sources are in use
     }
-    #endregion
 
-    #region SFX System
     // Play sound by category name
-    public void PlaySFX(string categoryName, Vector3? position = null, float volumeMultiplier = 1f)
+    // Plays an SFX clip based on the key provided, optionally at a specific position
+    public void PlaySFX(SFXKey key, Vector3? position = null, float volumeMultiplier = 1f)
     {
         if (audioConfig == null) return;
 
-        var category = audioConfig.GetSFXCategory(categoryName);
+        var category = audioConfig.GetSFXCategory(key);
         if (category == null) return;
 
         AudioClip clip = category.GetRandomClip();
@@ -111,63 +117,56 @@ public class AudioManager : MonoBehaviour
 
         AudioSource source = GetAvailableSFXSource();
         source.clip = clip;
-        source.volume = sfxVolume * masterVolume * category.volume * volumeMultiplier;
-
-        // Since it's a 2D game, we'll default to 2D sound
-        source.spatialBlend = 0f;
+        source.volume = category.volume * volumeMultiplier;
+        source.spatialBlend = 0f; // SFX is non-spatial by default because this is 2D with my big D
 
         if (position.HasValue)
         {
             source.transform.position = position.Value;
-            // You can still use spatial blend if you want positional audio in your 2D game
-            //source.spatialBlend = 1f; // Uncomment if you want positional audio
         }
 
         source.Play();
     }
 
-    public void PlaySFXOneShot(string categoryName, float volumeMultiplier = 1f)
+    // Plays a quick one-shot SFX that doesn’t need a separate AudioSource
+    public void PlaySFXOneShot(SFXKey key, float volumeMultiplier = 1f)
     {
         if (audioConfig == null) return;
 
-        var category = audioConfig.GetSFXCategory(categoryName);
+        var category = audioConfig.GetSFXCategory(key);
         if (category == null) return;
 
         AudioClip clip = category.GetRandomClip();
         if (clip == null) return;
 
-        GetAvailableSFXSource().PlayOneShot(clip, sfxVolume * masterVolume * category.volume * volumeMultiplier);
+        AudioSource source = GetAvailableSFXSource();
+        source.PlayOneShot(clip, category.volume * volumeMultiplier);
     }
     #endregion
 
     #region Music System
-    public void PlayMusic(string trackName, bool fadeIn = true)
+    public void PlayMusic(MusicKey key, bool fadeIn = true)
     {
-        var musicTrack = audioConfig.GetMusicTrack(trackName);
-        if (musicTrack == null) return;
-
-        // If we're already playing this track, don't restart
-        if (currentMusicTrack == trackName) return;
+        // Play new music only if it’s different from the current track
+        var musicTrack = audioConfig.GetMusicTrack(key);
+        if (musicTrack == null || key == currentMusic) return;
 
         // Stop current music first
         StopMusic(fadeIn);
 
         // Start new music
         StartCoroutine(PlayMusicRoutine(musicTrack, fadeIn));
-        currentMusicTrack = trackName;
+        currentMusic = key; // Update the current music track
     }
 
     private IEnumerator PlayMusicRoutine(AudioConfig.MusicTrack track, bool fadeIn)
     {
         // Setup main track
-        musicMainSource.clip = track.mainTrack;
-        musicMainSource.volume = 0f;
-        musicMainSource.Play();
+        musicSource.clip = track.mainTrack;
+        musicSource.volume = 0f;
+        musicSource.Play();
 
-        // Setup layers
-        SetupMusicLayers(track);
-
-        // Music for layer
+        // Music fadein entrance
         if (fadeIn)
         {
             float elapsed = 0f;
@@ -175,144 +174,77 @@ public class AudioManager : MonoBehaviour
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / track.fadeInDuration;
-
-                // Fade in main track
-                musicMainSource.volume = Mathf.Lerp(0f, track.volume * musicVolume * masterVolume, t);
-
-                // Fade in layers
-                for (int i = 0; i < musicLayerSources.Count; i++)
-                {
-                    musicLayerSources[i].volume = Mathf.Lerp(0f, layerVolumes[i] * musicVolume * masterVolume, t);
-                }
-
+                musicSource.volume = Mathf.Lerp(0f, track.volume, t);
                 yield return null;
             }
         }
-        else // Music for non-layer
-        {
-            // why programming needs math :skull:
-            musicMainSource.volume = track.volume * musicVolume * masterVolume;
-            for (int i = 0; i < musicLayerSources.Count; i++)
-            {
-                musicLayerSources[i].volume = layerVolumes[i] * musicVolume * masterVolume;
-            }
-        }
     }
 
-    private void SetupMusicLayers(AudioConfig.MusicTrack track)
-    {
-        // Clear existing layers
-        foreach (var source in musicLayerSources)
-        {
-            Destroy(source.gameObject);
-        }
-        musicLayerSources.Clear();
-        layerVolumes.Clear();
-
-        // Create new layers
-        if (track.layers != null)
-        {
-            foreach (var layer in track.layers)
-            {
-                var layerSource = CreateAudioSource($"MusicLayer_{musicLayerSources.Count}");
-                layerSource.clip = layer;
-                layerSource.loop = true;
-                layerSource.volume = 0f;
-                layerSource.Play();
-
-                musicLayerSources.Add(layerSource);
-                layerVolumes.Add(0f); // Start with layers muted
-            }
-        }
-    }
-    // Gradually bring in different layers based on game intensity
-    //AudioManager.Instance.SetMusicLayerVolume(0, 0.8f); // Normal at 80%
-    //AudioManager.Instance.SetMusicLayerVolume(2, 0.5f); // Tension at 50%
-    // too much thinking that this might become useless in long run i dont know just future proofing
-    public void SetMusicLayerVolume(int layerIndex, float volume)
-    {
-        if (layerIndex >= 0 && layerIndex < musicLayerSources.Count)
-        {
-            layerVolumes[layerIndex] = Mathf.Clamp01(volume);
-            musicLayerSources[layerIndex].volume = layerVolumes[layerIndex] * musicVolume * masterVolume;
-        }
-    }
-
-    // stops music
+    // Stops the current music, with an optional fade-out effect
     public void StopMusic(bool fadeOut = true)
     {
-        if (fadeOut && musicMainSource.isPlaying)
+        if (fadeOut && musicSource.isPlaying)
         {
             StartCoroutine(StopMusicRoutine());
         }
         else
         {
-            musicMainSource.Stop();
-            foreach (var layer in musicLayerSources)
-            {
-                layer.Stop();
-            }
+            musicSource.Stop();
+            musicSource.clip = null;
         }
     }
 
     private IEnumerator StopMusicRoutine()
     {
-        var track = audioConfig.GetMusicTrack(currentMusicTrack);
+        // Gradually reduce the volume for a fade-out effect
+        var track = audioConfig.GetMusicTrack(currentMusic);
         if (track == null) yield break;
 
-        float startVolume = musicMainSource.volume;
+        float startVolume = musicSource.volume;
         float elapsed = 0f;
 
         while (elapsed < track.fadeOutDuration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / track.fadeOutDuration;
-
-            musicMainSource.volume = Mathf.Lerp(startVolume, 0f, t);
-
-            // Fade out layers
-            for (int i = 0; i < musicLayerSources.Count; i++)
-            {
-                float layerStartVolume = musicLayerSources[i].volume;
-                musicLayerSources[i].volume = Mathf.Lerp(layerStartVolume, 0f, t);
-            }
-
+            musicSource.volume = Mathf.Lerp(startVolume, 0f, t);
             yield return null;
         }
 
-        musicMainSource.Stop();
-        foreach (var layer in musicLayerSources)
-        {
-            layer.Stop();
-        }
+        musicSource.Stop();
+        musicSource.clip = null;
     }
 
     #endregion
 
     #region Ambient System
-    public void PlayAmbient(string soundName, bool fadeIn = true)
+    public void PlayAmbient(AmbientKey key, bool fadeIn = true)
     {
-        var ambientSound = audioConfig.GetAmbientSound(soundName);
+        // Retrieve or create an audio source for the given ambient key
+        var ambientSound = audioConfig.GetAmbientSound(key);
         if (ambientSound == null) return;
 
-        if (!ambientSources.ContainsKey(soundName))
+        if (!ambientSources.ContainsKey(key))
         {
-            var source = CreateAudioSource($"Ambient_{soundName}");
+            var source = CreateAudioSource($"Ambient_{key}");
             source.clip = ambientSound.clip;
             source.loop = true;
-            ambientSources.Add(soundName, source);
+            source.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Ambient")[0];
+            ambientSources.Add(key, source);
         }
-
-        var audioSource = ambientSources[soundName];
-        StartCoroutine(PlayAmbientRoutine(soundName, ambientSound, fadeIn));
+        // Start playing the ambient sound with optional fade-in
+        var audioSource = ambientSources[key];
+        StartCoroutine(PlayAmbientRoutine(key, ambientSound, fadeIn));
     }
 
-    private IEnumerator PlayAmbientRoutine(string soundName, AudioConfig.AmbientSound ambient, bool fadeIn)
+    private IEnumerator PlayAmbientRoutine(AmbientKey key, AudioConfig.AmbientSound ambient, bool fadeIn)
     {
-        var source = ambientSources[soundName];
-        source.volume = fadeIn ? 0f : ambient.volume * ambientVolume * masterVolume;
+        // Set up the volume and start playing
+        var source = ambientSources[key];
+        source.volume = fadeIn ? 0f : ambient.volume;
         source.Play();
 
+        // Fade-in effect if enabled
         if (fadeIn)
         {
             float elapsed = 0f;
@@ -320,45 +252,35 @@ public class AudioManager : MonoBehaviour
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / ambient.fadeInDuration;
-                source.volume = Mathf.Lerp(0f, ambient.volume * ambientVolume * masterVolume, t);
+                source.volume = Mathf.Lerp(0f, ambient.volume, t);
                 yield return null;
-            }
-        }
-
-        // Handle random delays between loops if specified
-        if (ambient.randomDelayRange != Vector2.zero)
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(source.clip.length);
-                float delay = Random.Range(ambient.randomDelayRange.x, ambient.randomDelayRange.y);
-                source.Pause();
-                yield return new WaitForSeconds(delay);
-                source.UnPause();
             }
         }
     }
 
-    public void StopAmbient(string soundName, bool fadeOut = true)
+    public void StopAmbient(AmbientKey key, bool fadeOut = true)
     {
-        if (!ambientSources.ContainsKey(soundName)) return;
+        // Stop ambient sound for a given key with optional fade-out
 
-        var ambientSound = audioConfig.GetAmbientSound(soundName);
+        if (!ambientSources.ContainsKey(key)) return;
+
+        var ambientSound = audioConfig.GetAmbientSound(key);
         if (ambientSound == null) return;
 
         if (fadeOut)
         {
-            StartCoroutine(StopAmbientRoutine(soundName, ambientSound));
+            StartCoroutine(StopAmbientRoutine(key, ambientSound));
         }
         else
         {
-            ambientSources[soundName].Stop();
+            ambientSources[key].Stop();
         }
     }
 
-    private IEnumerator StopAmbientRoutine(string soundName, AudioConfig.AmbientSound ambient)
+    private IEnumerator StopAmbientRoutine(AmbientKey key, AudioConfig.AmbientSound ambient)
     {
-        var source = ambientSources[soundName];
+        // Fade-out effect for ambient sound
+        var source = ambientSources[key];
         float startVolume = source.volume;
         float elapsed = 0f;
 
@@ -372,28 +294,5 @@ public class AudioManager : MonoBehaviour
 
         source.Stop();
     }
-    #endregion
-
-    #region Volume Controls
-    public void SetMasterVolume(float volume)
-    {
-        masterVolume = Mathf.Clamp01(volume);
-    }
-
-    public void SetMusicVolume(float volume)
-    {
-        musicVolume = Mathf.Clamp01(volume);
-    }
-
-    public void SetSFXVolume(float volume)
-    {
-        sfxVolume = Mathf.Clamp01(volume);
-    }
-
-    public void SetAmbientVolume(float volume)
-    {
-        ambientVolume = Mathf.Clamp01(volume);
-    }
-
     #endregion
 }

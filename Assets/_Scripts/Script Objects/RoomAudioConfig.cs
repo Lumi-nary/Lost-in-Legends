@@ -9,6 +9,7 @@ public class RoomAudioConfig : ScriptableObject
     [System.Serializable]
     public class RoomAudio
     {
+        public string roomName;
         [Tooltip("Should match the Room ID in ProCamera2DRooms")]
         public string roomId;
         [Tooltip("Name of the music track from AudioConfig")]
