@@ -106,6 +106,7 @@ public class PlayerMovement : MonoBehaviour, IKnockbackable
             if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) && !IsJumping) //checks if set box overlaps with ground
             {
                 LastOnGroundTime = Data.coyoteTime; //if so sets the lastGrounded to coyoteTime
+
             }
 
             //Right Wall Check

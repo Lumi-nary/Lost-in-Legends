@@ -31,6 +31,17 @@ MonoBehaviour:
     volume: 0.25
     clips:
     - {fileID: 8300000, guid: 5d84d3911701b1246819dd32ec2c39ab, type: 3}
+  - key: 10
+    volume: 1
+    clips:
+    - {fileID: 8300000, guid: 7976b2b2328914e4aaa12f825b221979, type: 3}
+    - {fileID: 8300000, guid: bd89474aadd70d044bbae8e799b6655e, type: 3}
+  - key: 11
+    volume: 1
+    clips:
+    - {fileID: 8300000, guid: 8b01ad2fbf8a18b4bbc5d6d6a1fea0e6, type: 3}
+    - {fileID: 8300000, guid: 72a468345e05a8c4d96cc86edc721e70, type: 3}
+    - {fileID: 8300000, guid: aa2d39e6faa9f9c44848e5f1a1e41424, type: 3}
   musicTracks: []
   ambientSounds:
   - key: 1

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour, IDamagable
 {
     [Header("Health Settings")]
-    [SerializeField] private List<DamageType> immunities = new List<DamageType>();
+    [SerializeField] private List<ElementType> immunities = new List<ElementType>();
     [SerializeField] private float deathDelay = 1f;
 
     private bool isInvulnerable = false;
@@ -86,6 +86,11 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         AudioManager.Instance.PlaySFXOneShot(SFXKey.PlayerHurt);
 
     }
+    public void ModifyHealth(float amount)
+    {
+        statsManager.ModifyStat(PlayerStatsManager.StatType.Mana, amount);
+
+    }
     private void OnHealthChanged(float currentHealth)
     {
         if (currentHealth <= 0 && !isDead)
@@ -100,7 +105,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         isDead = true;
 
         // Disable player control
-        //DisablePlayerControl();
+        userInput.DeactivatePlayerControls();
 
         // Play death effects
         //if (deathEffectPrefab != null)
@@ -144,7 +149,7 @@ public class PlayerHealth : MonoBehaviour, IDamagable
         //StartCoroutine(GrantTemporaryInvulnerability());
 
         // Re-enable player control
-        //EnablePlayerControl();
+        userInput.ActivatePlayerControls();
     }
 
     private void OnPlayerRespawn(Vector2 respawnPosition)

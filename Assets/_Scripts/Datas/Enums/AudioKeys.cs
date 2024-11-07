@@ -21,7 +21,14 @@ public enum SFXKey
     // UI
     UIClick,
     UIHover,
+
+    // Weapon
+    SwordWhoosh,
+
+    // Enemy
+    DummyCombat,
     // Add more
+
 }
 
 public enum MusicKey

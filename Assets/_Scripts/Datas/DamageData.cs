@@ -6,11 +6,11 @@ public struct DamageData
 {
     public float amount;
     public GameObject source;
-    public DamageType type;
+    public ElementType type;
     public Vector2 knockbackDirection;
     public float knockbackForce;
 
-    public DamageData(float amount, GameObject source, DamageType type = DamageType.Normal
+    public DamageData(float amount, GameObject source, ElementType type = ElementType.Normal
         , Vector2 knockbackDirection = default, float knockbackForce = 0f)
     {
         this.amount = amount;

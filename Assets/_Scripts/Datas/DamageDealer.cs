@@ -6,7 +6,7 @@ public class DamageDealer : MonoBehaviour, IDamageDealer
 {
     [Header("Damage Settings")]
     [SerializeField] private float damageAmount = 10f;
-    [SerializeField] private DamageType damageType = DamageType.Normal;
+    [SerializeField] private ElementType damageType = ElementType.Normal;
     [SerializeField] private bool canDamageMultipleTimes = false;
     [SerializeField] private float damageInterval = 1f;
 
