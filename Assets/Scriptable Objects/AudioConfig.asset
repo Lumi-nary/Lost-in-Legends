@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c72dfc95c70df54b972c52f89f3f005, type: 3}
+  m_Name: AudioConfig
+  m_EditorClassIdentifier: 
+  sfxCategories:
+  - key: 1
+    volume: 0.7
+    clips:
+    - {fileID: 8300000, guid: 72de0e11feae19649b98eb7c6fa8b483, type: 3}
+    - {fileID: 8300000, guid: abec3573192089f4892882b14b051c46, type: 3}
+  - key: 2
+    volume: 1
+    clips:
+    - {fileID: 8300000, guid: 538228b92d67f504993192073148f911, type: 3}
+    - {fileID: 8300000, guid: efb3bdc465aaa3744a7c3671151ad729, type: 3}
+  - key: 5
+    volume: 0.15
+    clips:
+    - {fileID: 8300000, guid: 42edd55114cc426438d07f47d7ff0a38, type: 3}
+  - key: 7
+    volume: 0.25
+    clips:
+    - {fileID: 8300000, guid: 5d84d3911701b1246819dd32ec2c39ab, type: 3}
+  - key: 10
+    volume: 1
+    clips:
+    - {fileID: 8300000, guid: 7976b2b2328914e4aaa12f825b221979, type: 3}
+    - {fileID: 8300000, guid: bd89474aadd70d044bbae8e799b6655e, type: 3}
+  - key: 11
+    volume: 1
+    clips:
+    - {fileID: 8300000, guid: 8b01ad2fbf8a18b4bbc5d6d6a1fea0e6, type: 3}
+    - {fileID: 8300000, guid: 72a468345e05a8c4d96cc86edc721e70, type: 3}
+    - {fileID: 8300000, guid: aa2d39e6faa9f9c44848e5f1a1e41424, type: 3}
+  musicTracks: []
+  ambientSounds:
+  - key: 1
+    clip: {fileID: 8300000, guid: 749428170bd956149a4ede7c65dbb8b6, type: 3}
+    volume: 0.85
+    fadeInDuration: 1
+    fadeOutDuration: 1
+    randomDelayRange: {x: 0, y: 0}
+  - key: 2
+    clip: {fileID: 8300000, guid: 660790bb19a97eb4581a05d90c81f369, type: 3}
+    volume: 1
+    fadeInDuration: 1
+    fadeOutDuration: 1
+    randomDelayRange: {x: 0, y: 0}

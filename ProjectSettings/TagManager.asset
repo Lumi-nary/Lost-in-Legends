@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -11,15 +12,15 @@ TagManager:
   - 
   - Water
   - UI
-  - Player
+  - 
   - Ground
   - Interactable
   - Background
-  - Parallax1
-  - Parallax2
-  - Parallax3
-  - Parallax4
-  - Parallax5
+  - Damageable
+  - Dead
+  - Player
+  - 
+  - 
   - 
   - 
   - 
@@ -38,9 +39,24 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
   - name: Background
     uniqueID: 4292083605
     locked: 0
-  - name: Default
-    uniqueID: 0
+  - name: Decoration
+    uniqueID: 3831989871
+    locked: 0
+  - name: Platforms
+    uniqueID: 4036381495
+    locked: 0
+  - name: Enemy
+    uniqueID: 3580293295
+    locked: 0
+  - name: Player
+    uniqueID: 248097799
+    locked: 0
+  - name: Foreground Decoration
+    uniqueID: 3000269
     locked: 0

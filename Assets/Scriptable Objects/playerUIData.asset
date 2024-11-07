@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: playerUIData
   m_EditorClassIdentifier: 
   statConfigurations:
-  - statType: 1
+  - statType: 0
     config: {fileID: 11400000, guid: 961b4fb27c042da498286293cec00d68, type: 2}
-  - statType: 2
+  - statType: 1
     config: {fileID: 11400000, guid: d43ebc7544d960a469391f346a7b2394, type: 2}
