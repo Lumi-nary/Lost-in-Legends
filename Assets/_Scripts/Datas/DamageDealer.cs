@@ -10,16 +10,23 @@ public class DamageDealer : MonoBehaviour, IDamageDealer
     [SerializeField] private bool canDamageMultipleTimes = false;
     [SerializeField] private float damageInterval = 1f;
 
-    [Space(10f)]
-
     [Header("Knockback Settings")]
     [SerializeField] private float knockbackForce = 5f;
     [SerializeField] private bool useCustomKnockbackDirection = false;
     [SerializeField] private Vector2 customKnockbackDirection = Vector2.right;
 
+    [Header("Source Setting")]
+    [SerializeField] private bool isPlayerAttack = false;
+    [SerializeField] private KnockbackDirectionType knockbackDirectionType = KnockbackDirectionType.FromSource;
+
     private float lastDamageTime;
     private HashSet<GameObject> damagedObjects = new HashSet<GameObject>();
-
+    private enum KnockbackDirectionType
+    {
+        FromSource,          // Knockback direction from this object to target
+        FromPlayerFacing,    // Knockback based on player facing direction
+        CustomDirection      // Use custom knockback direction
+    }
     public virtual DamageData GetDamageData(GameObject target)
     {
         // Knockback Direction
@@ -30,7 +37,8 @@ public class DamageDealer : MonoBehaviour, IDamageDealer
             gameObject, 
             damageType,
             knockbackDir,
-            knockbackForce
+            knockbackForce,
+            isPlayerAttack
         );
     }
 
@@ -75,6 +83,23 @@ public class DamageDealer : MonoBehaviour, IDamageDealer
     protected virtual Vector2 CalculateKnockBack(GameObject target)
     {
         // calculate direction from this object to the target
-        return (target.transform.position - transform.position).normalized;
+        switch (knockbackDirectionType)
+        {
+            case KnockbackDirectionType.FromSource:
+                return (target.transform.position - transform.position).normalized;
+
+            case KnockbackDirectionType.FromPlayerFacing:
+                if (PlayerDirectionManager.Instance != null)
+                {
+                    return PlayerDirectionManager.Instance.FacingDirection;
+                }
+                return (target.transform.position - transform.position).normalized;
+
+            case KnockbackDirectionType.CustomDirection:
+                return customKnockbackDirection.normalized;
+
+            default:
+                return Vector2.right;
+        }
     }
 }

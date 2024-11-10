@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CombatDummyController : MonoBehaviour, IDamagable, IKnockbackable
 {
-    [SerializeField]
-    private float maxHealth, knockbackDuration, deathTorque;
+    [SerializeField] private float maxHealth, knockbackDuration, deathTorque;
+    [SerializeField] private GameObject hitParticle;
     private Vector2 customKnockbackDirection = Vector2.right;
     private float currentHealth, knockbackStart;
     private bool playerFacingRight;
@@ -44,15 +44,16 @@ public class CombatDummyController : MonoBehaviour, IDamagable, IKnockbackable
     public void TakeDamage(DamageData damageData)
     {
         currentHealth -= damageData.amount;
-        playerFacingRight = _playerMovement.IsFacingRight;
-        if (playerFacingRight = !_playerMovement.IsFacingRight)
+        // If the damage is from player, update the facing direction
+        if (damageData.isFromPlayer)
         {
-            playerFacingLeft = true;
+            playerFacingRight = PlayerDirectionManager.Instance.IsFacingRight;
+            playerFacingLeft = !playerFacingRight;
         }
-        else
-        {
-            playerFacingLeft = false;
-        }
+
+
+        Instantiate(hitParticle, aliveGO.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360f)));
+
         aliveAnim.SetBool("playerOnLeft", playerFacingLeft);
         aliveAnim.SetTrigger("damage");
         AudioManager.Instance.PlaySFX(SFXKey.DummyCombat, aliveGO.transform.position);
@@ -98,7 +99,7 @@ public class CombatDummyController : MonoBehaviour, IDamagable, IKnockbackable
         brokenBotGO.transform.position = aliveGO.transform.position;
 
         // Apply knockback on death
-        rbBrokenTop.velocity = knockbackDirection * knockbackForce * 5;
+        rbBrokenTop.velocity = knockbackDirection * knockbackForce * 2;
         //rbBrokenBot.velocity = knockbackDirection * knockbackForce;
 
         rbBrokenTop.AddTorque(deathTorque * Mathf.Sign(knockbackDirection.x), ForceMode2D.Impulse);
