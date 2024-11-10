@@ -10,7 +10,7 @@ Functions
 8.	Swap Weapon <br>
 9.	Animation $${\color{lightgreen}(Done)}$$ <br>
 10.	Sounds $${\color{lightgreen}(Done)}$$ <br>
-11.	Enemy <br>
+11.	Enemy $${\color{lightgreen}(Done)}$$ <br>
 12.	Drops <br>
 13.	Boss <br>
 14.	Dialogues <br>
