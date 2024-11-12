@@ -107,7 +107,7 @@ public class PlayerStatsManager : MonoBehaviour
         stat.currentValue = maxValue * previousPercentage;
 
         // Update the UI bar width
-        UpdateBarWidth(statType, maxValue / 2);
+        UpdateBarWidth(statType, maxValue);
 
         // Notify listeners of the change
         stat.onValueChanged?.Invoke(stat.currentValue);
@@ -147,7 +147,7 @@ public class PlayerStatsManager : MonoBehaviour
         if (targetTransform == null) return;
 
         // Calculate the new width based on the ratio of new max value to base max value
-        float widthRatio = newMaxValue / baseMaxValue;
+        float widthRatio = (newMaxValue - 50) / baseMaxValue;
         float newWidth = baseWidth * widthRatio;
 
         // Update the RectTransform's width

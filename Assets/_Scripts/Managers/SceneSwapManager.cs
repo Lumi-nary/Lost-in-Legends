@@ -33,11 +33,19 @@ public class SceneSwapManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+    // Swap scene using doors
     public static void SwapSceneFromDoorUse(SceneField myScene, DoorInteract.DoorToSpawnAt doorToSpawnTo)
     {
         _loadFromDoor = true;
         instance.StartCoroutine(instance.FadeOutThenChangeScene(myScene, doorToSpawnTo));
     }
+
+    // Swap scene without using dOORORSOROS
+    public static void SwapScene(SceneField scene)
+    {
+        instance.StartCoroutine(instance.FadeOutThenChangeScene(scene));
+    }
+
     private IEnumerator FadeOutThenChangeScene(SceneField myScene, DoorInteract.DoorToSpawnAt doorToSpawnAt = DoorInteract.DoorToSpawnAt.None)
     {
         userInput.DeactivatePlayerControls();
