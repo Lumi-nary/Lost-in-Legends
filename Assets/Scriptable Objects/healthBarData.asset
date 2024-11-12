@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c2be311c37ab704f9c83658ed2bcd64, type: 3}
   m_Name: healthBarData
   m_EditorClassIdentifier: 
-  maxValue: 100
+  maxValue: 200
   smoothFill: 1
   smoothSpeed: 10
   showValue: 0
