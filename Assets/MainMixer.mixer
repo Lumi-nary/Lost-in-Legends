@@ -68,6 +68,8 @@ AudioMixerController:
   m_EnableSuspend: 1
   m_UpdateMode: 0
   m_ExposedParameters:
+  - guid: 353f7569605a53c4697e16dab6d7ce97
+    name: ambient
   - guid: b08a034e9724b9448b3f701c9d10453e
     name: music
   - guid: ed3f0d106563feb48b1b76e248b922d4
